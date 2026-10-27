@@ -1,0 +1,8 @@
+/src-tauri/target/
+/src-tauri/gen/
+# Ankama files are never committed: the app extracts them from the user's own APK at first launch
+/www/
+*.apk
+*.xapk
+*.apkm
+/dist/

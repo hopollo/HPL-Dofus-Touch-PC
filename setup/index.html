@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>HPL - Dofus Touch PC</title>
+	<style>
+		:root { color-scheme: dark; }
+		body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: #0a2b2b; color: #fff; font: 15px system-ui, sans-serif; }
+		main { width: min(560px, 100% - 32px); background: #0d3b3b; border: 2px solid #4fb3a9; border-radius: 14px; padding: 24px; box-sizing: border-box; }
+		h1 { margin: 0 0 8px; font-size: 20px; }
+		p { margin: 0 0 12px; color: #bfe3df; line-height: 1.5; }
+		label { display: block; margin: 16px 0 0; padding: 16px; text-align: center; border: 2px dashed #4fb3a9; border-radius: 10px; cursor: pointer; }
+		label:hover, label:focus-within { background: #124d4d; }
+		input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+		#status { min-height: 1.5em; margin: 16px 0 0; color: #fff; }
+		#status.error { color: #ffb3a8; }
+	</style>
+</head>
+<body>
+<main>
+	<h1>HPL - Dofus Touch PC</h1>
+	<p>This app runs the official Dofus Touch client on your PC. It does not include any game file: pick your own
+		Dofus Touch APK once, and the app takes what it needs from it.</p>
+	<p>Use the latest version: copy it from your Android device, or download it from a trusted APK site
+		(.apk, .xapk and .apkm are accepted). Do the same after each game update, with Options ▸ Change APK.</p>
+	<label>Choose the Dofus Touch APK…
+		<input id="apk" type="file" accept=".apk,.xapk,.apkm">
+	</label>
+	<p id="status" role="status" aria-live="polite"></p>
+</main>
+<script>
+	var input = document.getElementById('apk'), status = document.getElementById('status');
+	input.addEventListener('change', function () {
+		var file = input.files[0];
+		if (!file) return;
+		status.className = '';
+		status.textContent = 'Reading ' + file.name + '…';
+		input.disabled = true;
+		fetch('http://cdvfile.localhost/__install', { method: 'POST', body: file })
+			.then(function (r) { return r.text().then(function (msg) { if (!r.ok) throw new Error(msg || 'Install failed.'); }); })
+			.then(function () { status.textContent = 'Done! Starting the game…'; })
+			.catch(function (e) {
+				status.className = 'error';
+				status.textContent = e.message;
+				input.disabled = false;
+				input.value = '';
+			});
+	});
+</script>
+</body>
+</html>
